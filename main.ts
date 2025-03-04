@@ -17,13 +17,9 @@ import Edge from "./red/edge";
 import MME from "./red/operators/mme";
 import OBJFileIO from "./io/obj";
 
-// const modelOperations = new DoublyLinkedList<Operator>();
-
 const model = new Model();
 const region1 = new Region();
 const mmr = new MMR(model, region1);
-
-// modelOperations.add(mmr);
 
 mmr.execute();
 
@@ -34,10 +30,6 @@ const vertex3 = new Vertex(new Point(0, 0, 0));
 const vertex4 = new Vertex(new Point(0, 1, 0));
 
 const msv = new MSV(region1, shell1, vertex1);
-// const msv1 = new MSV(region, new Shell(region), new Vertex());
-
-// modelOperations.add(msv);
-// modelOperations.add(msv1);
 
 msv.execute();
 
@@ -55,7 +47,6 @@ const loop3 = new Loop();
 const loop4 = new Loop();
 
 const mrsfl = new MRSFL(vertex1, region1, region2, shell2, face1, loop1);
-// modelOperations.add(mrsfl);
 
 mrsfl.execute();
 
@@ -69,7 +60,7 @@ const edge6 = new Edge();
 const mmev1 = new MMEV(vertex1, null, Direction.CCW, face1, Orientation.UNSPECIFIED, edge1, vertex4);
 const mmev2 = new MMEV(vertex4, edge1, Direction.CCW, face1, Orientation.OUTSIDE, edge4, vertex2);
 
-const mme1 = new MME(vertex1, edge1, Direction.CCW, vertex2, edge4, Direction.CCW, face1, Orientation.INSIDE, edge3, face2, loop2); // I think it should be OUTSIDE
+const mme1 = new MME(vertex1, edge1, Direction.CCW, vertex2, edge4, Direction.CCW, face1, Orientation.INSIDE, edge3, face2, loop2);
 
 const mmev3 = new MMEV(vertex2, edge3, Direction.CCW, face1, Orientation.OUTSIDE, edge5, vertex3);
 
@@ -80,15 +71,9 @@ mmev1.execute();
 mmev2.execute();
 mme1.execute();
 mmev3.execute();
-mme2.execute(); // parei aqui
+mme2.execute();
 mme3.execute();
 
 const exporter = new OBJFileIO(model);
 
 exporter.write("examples/output.obj");
-// msv1.execute();
-
-// modelOperations.last!.data.unexecute();
-// modelOperations.last!.data.execute();
-
-// console.log("After unexecute");

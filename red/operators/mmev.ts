@@ -109,8 +109,10 @@ export default class MMEV extends Operator {
             vu3.edgeuse = neweu1;
             vu4.up = DescType.EDGEUSE;
             vu4.edgeuse = neweu3;
+
             // TODO: Decide to remove previous loopuse as down ptr type is now edgeuse
-            // vu3!.loopuse = null; 
+            vu3.loopuse = null;
+            vu4.loopuse = null;
 
             lu_v!.down = DescType.EDGEUSE;
             lu_v!.edgeuse = neweu1;
@@ -118,7 +120,8 @@ export default class MMEV extends Operator {
             lu_v!.mate!.edgeuse = neweu3;
 
             // TODO: Decide to remove previous vertex use as down ptr type is now edgeuse
-            // lu_v!.vertexuse = null; 
+            lu_v.vertexuse = null;
+            lu_v.mate!.vertexuse = null; 
         } else {
             let newvu3 = new VertexUse();
             let newvu4 = new VertexUse();
