@@ -92,16 +92,15 @@ export default class MRSFL extends Operator {
             vertexHasUseInRegion.s!.faceuse = newfu2;
 
             // TODO: Decide if is necessary to remove the vertex use as the desctype is now faceuse
-            // vertexHasUseInRegion.s!.vertexuse = null;
+            vertexHasUseInRegion.s.vertexuse = null;
 
             vertexHasUseInRegion.vu!.up = DescType.LOOPUSE;
             vertexHasUseInRegion.vu!.loopuse = newlu2;
 
             // TODO: Decide if is necessary to remove the shell pointer as the up ptr type is now loopuse
-
+            vertexHasUseInRegion.vu.shell = null;
 
             // now add the new vertexuse to the list of uses of the vertex
-            
             link_vu(newvu1, this.vertex, DescType.LOOPUSE, null, this.newLoop)
         } else {
             newlu2.next = newlu2;

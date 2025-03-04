@@ -25,6 +25,7 @@ export class MEV extends Operator {
         this.region = region;
 
         this.new_edge = new Edge();
+        
         // TODO: add Point on vertex constructor
         this.new_vertex = new Vertex();
     }
