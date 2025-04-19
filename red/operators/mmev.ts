@@ -3,7 +3,7 @@ import Edge from "../edge";
 import EdgeUse from "../edgeuse";
 import Face from "../face";
 import { IsEdgeOnFaceResult } from "../sup";
-import { fill_eu_loopuse, fill_vu_edgeuse, link_vu, link_wing } from "../utils";
+import { link_vu, link_wing } from "../utils";
 import Vertex from "../vertex";
 import VertexUse from "../vertexuse";
 import Operator from "./operator";
@@ -85,12 +85,12 @@ export default class MMEV extends Operator {
         newvu1.next = newvu2;
         newvu1.last = newvu2;
 
-        fill_vu_edgeuse(newvu1, this.new_vertex, neweu2);
+        newvu1.fill_vu_edgeuse(this.new_vertex, neweu2);
 
         newvu2.next = newvu1;
         newvu2.last = newvu1;
 
-        fill_vu_edgeuse(newvu2, this.new_vertex, neweu4);
+        newvu2.fill_vu_edgeuse(this.new_vertex, neweu4);
 
         if (!eu_v) {
             let vu3: VertexUse;
@@ -99,11 +99,11 @@ export default class MMEV extends Operator {
             vu3 = lu_v!.vertexuse!;
             vu4 = lu_v!.mate!.vertexuse!;
 
-            fill_eu_loopuse(neweu1, vu3, neweu4, this.new_edge, lu_v!, neweu2, neweu2, neweu2, Orientation.SAME);
-            fill_eu_loopuse(neweu2, newvu1, neweu3, this.new_edge, lu_v!, neweu1, neweu1, neweu1, Orientation.OPPOSITE);
+            neweu1.fill_eu_loopuse(vu3, neweu4, this.new_edge, lu_v!, neweu2, neweu2, neweu2, Orientation.SAME);
+            neweu2.fill_eu_loopuse(newvu1, neweu3, this.new_edge, lu_v!, neweu1, neweu1, neweu1, Orientation.OPPOSITE);
 
-            fill_eu_loopuse(neweu3, vu4, neweu2, this.new_edge, lu_v!.mate!, neweu4,neweu4, neweu4, Orientation.SAME);
-            fill_eu_loopuse(neweu4, newvu2, neweu1, this.new_edge, lu_v!.mate!, neweu3, neweu3, neweu3, Orientation.OPPOSITE);
+            neweu3.fill_eu_loopuse(vu4, neweu2, this.new_edge, lu_v!.mate!, neweu4,neweu4, neweu4, Orientation.SAME);
+            neweu4.fill_eu_loopuse(newvu2, neweu1, this.new_edge, lu_v!.mate!, neweu3, neweu3, neweu3, Orientation.OPPOSITE);
 
             vu3.up = DescType.EDGEUSE;
             vu3.edgeuse = neweu1;
@@ -126,13 +126,13 @@ export default class MMEV extends Operator {
             let newvu3 = new VertexUse();
             let newvu4 = new VertexUse();
 
-            fill_eu_loopuse(neweu1, newvu3, neweu4, this.new_edge, lu_v!, null, null, neweu2, Orientation.SAME);
-            fill_eu_loopuse(neweu2, newvu1, neweu3, this.new_edge, lu_v!, null, null, neweu1, Orientation.OPPOSITE);
-            fill_eu_loopuse(neweu3, newvu4, neweu2, this.new_edge, lu_v!.mate!, null, null, neweu4, Orientation.SAME);
-            fill_eu_loopuse(neweu4, newvu2, neweu1, this.new_edge, lu_v!.mate!, null, null, neweu3, Orientation.OPPOSITE);
+            neweu1.fill_eu_loopuse(newvu3, neweu4, this.new_edge, lu_v!, null, null, neweu2, Orientation.SAME);
+            neweu2.fill_eu_loopuse(newvu1, neweu3, this.new_edge, lu_v!, null, null, neweu1, Orientation.OPPOSITE);
+            neweu3.fill_eu_loopuse(newvu4, neweu2, this.new_edge, lu_v!.mate!, null, null, neweu4, Orientation.SAME);
+            neweu4.fill_eu_loopuse(newvu2, neweu1, this.new_edge, lu_v!.mate!, null, null, neweu3, Orientation.OPPOSITE);
 
-            fill_vu_edgeuse(newvu3, this.existing_vertex, neweu1);
-            fill_vu_edgeuse(newvu4, this.existing_vertex, neweu3);
+            newvu3.fill_vu_edgeuse(this.existing_vertex, neweu1);
+            newvu4.fill_vu_edgeuse(this.existing_vertex, neweu3);
 
             link_vu(newvu3, this.existing_vertex, DescType.EDGEUSE, this.new_edge, null);
             link_vu(newvu4, this.existing_vertex, DescType.EDGEUSE, this.new_edge, null);

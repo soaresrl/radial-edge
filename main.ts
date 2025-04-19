@@ -76,4 +76,4 @@ mme3.execute();
 
 const exporter = new OBJFileIO(model);
 
-exporter.write("examples/output.obj");
+exporter.write("examples/output-2.obj");

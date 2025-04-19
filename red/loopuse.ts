@@ -24,4 +24,20 @@ export default class LoopUse extends CircularDoublyLinkedListItem {
         LoopUse.counter++;
         this.id = LoopUse.counter;
     }
+
+    fill_lu_vertexuse(fu: FaceUse, mate: LoopUse, loop: Loop, vu: VertexUse) {
+        this.faceuse = fu;
+        this.mate = mate;
+        this.loop = loop;
+        this.down = DescType.VERTEXUSE;
+        this.vertexuse = vu;
+    }
+    
+    fill_lu_edgeuse(fu: FaceUse, mate: LoopUse, loop: Loop, eu: EdgeUse) {
+        this.faceuse = fu;
+        this.mate = mate;
+        this.loop = loop;
+        this.down = DescType.EDGEUSE;
+        this.edgeuse = eu;
+    }
 }

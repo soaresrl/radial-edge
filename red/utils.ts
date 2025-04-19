@@ -1,12 +1,8 @@
-import { DescType, Direction, Orientation } from "./definitions";
+import { DescType, Direction } from "./definitions";
 import Edge from "./edge";
 import EdgeUse from "./edgeuse";
-import Face from "./face";
-import FaceUse from "./faceuse";
 import Loop from "./loop";
 import LoopUse from "./loopuse";
-import Region from "./region";
-import Shell from "./shell";
 import Vertex from "./vertex";
 import VertexUse from "./vertexuse";
 
@@ -53,75 +49,6 @@ abstract class CircularDoublyLinkedListItem {
 
         return head;
     }
-}
-
-function fill_s_faceuse(shell: Shell, region: Region, shell_faceuse: FaceUse) {
-    shell.region = region;
-    shell.desc_type = DescType.FACEUSE;
-    shell.faceuse = shell_faceuse;
-}
-
-function fill_fu(fu: FaceUse, shell: Shell, mate: FaceUse, lu: LoopUse, orient: Orientation, face: Face){
-    fu.owningShell = shell;
-    fu.mate = mate;
-    fu.loopuse = lu;
-    fu.orientation = orient;
-    fu.face = face;
-}
-
-function fill_lu_vertexuse(lu: LoopUse, fu: FaceUse, mate: LoopUse, loop: Loop, vu: VertexUse) {
-    lu.faceuse = fu;
-    lu.mate = mate;
-    lu.loop = loop;
-    lu.down = DescType.VERTEXUSE;
-    lu.vertexuse = vu;
-}
-
-function fill_lu_edgeuse(lu: LoopUse, fu: FaceUse, mate: LoopUse, loop: Loop, eu: EdgeUse) {
-    lu.faceuse = fu;
-    lu.mate = mate;
-    lu.loop = loop;
-    lu.down = DescType.EDGEUSE;
-    lu.edgeuse = eu;
-}
-
-function fill_vu_loopuse(vu: VertexUse, v: Vertex, lu: LoopUse){
-    vu.vertex = v;
-    vu.up = DescType.LOOPUSE;
-    vu.loopuse = lu;
-}
-
-function fill_vu_edgeuse(vu: VertexUse, vertex: Vertex, eu: EdgeUse) {
-    vu.vertex = vertex;
-    vu.up = DescType.EDGEUSE;
-    vu.edgeuse = eu;
-}
-
-function fill_vu_shell(vu: VertexUse, vertex: Vertex, shell: Shell) {
-    vu.vertex = vertex;
-    vu.up = DescType.SHELL;
-    vu.shell = shell;
-}
-
-function fill_eu_shell(eu: EdgeUse, vu: VertexUse, mate: EdgeUse, edge: Edge, shell: Shell, orient: Orientation) {
-    eu.vertexUse = vu;
-    eu.mate = mate;
-    eu.edge = edge;
-    eu.orientation = orient;
-    eu.up = DescType.SHELL;
-    eu.shell = shell;
-}
-
-function fill_eu_loopuse(eu: EdgeUse, vu: VertexUse, mate: EdgeUse, edge: Edge, lu: LoopUse, cw: EdgeUse | null, ccw: EdgeUse | null, radial: EdgeUse, orient: Orientation) {
-    eu.vertexUse = vu;
-    eu.mate = mate;
-    eu.edge = edge;
-    eu.orientation = orient;
-    eu.up = DescType.LOOPUSE;
-    eu.loopuse = lu;
-    eu.clockwiseEdgeUse = cw;
-    eu.counterClockwiseEdgeUse = ccw;
-    eu.radial = radial;
 }
 
 function for_all_eu_in_lu(head: EdgeUse, operation: (eu: EdgeUse) => void) {
@@ -310,15 +237,6 @@ function link_wing(v: Vertex, e: Edge, dir: Direction, lu: LoopUse, eu1: EdgeUse
 
 export {
     CircularDoublyLinkedListItem,
-    fill_s_faceuse,
-    fill_fu,
-    fill_lu_vertexuse,
-    fill_lu_edgeuse,
-    fill_vu_loopuse,
-    fill_vu_edgeuse,
-    fill_vu_shell,
-    fill_eu_shell,
-    fill_eu_loopuse,
     for_all_eu_in_lu,
     link_vu,
     link_wing

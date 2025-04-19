@@ -26,4 +26,10 @@ export default class Shell extends CircularDoublyLinkedListItem {
         Shell.counter++;
         this.id = Shell.counter;
     }
+
+    fill_s_faceuse(region: Region, shell_faceuse: FaceUse) {
+        this.region = region;
+        this.desc_type = DescType.FACEUSE;
+        this.faceuse = shell_faceuse;
+    }
 }

@@ -7,7 +7,7 @@ import Loop from "../loop";
 import LoopUse from "../loopuse";
 import Shell from "../shell";
 import { IsEdgeOnFaceResult } from "../sup";
-import { fill_eu_loopuse, fill_fu, fill_lu_edgeuse, fill_vu_edgeuse, for_all_eu_in_lu, link_vu, link_wing } from "../utils";
+import { for_all_eu_in_lu, link_vu, link_wing } from "../utils";
 import Vertex from "../vertex";
 import VertexUse from "../vertexuse";
 import Operator from "./operator";
@@ -162,8 +162,8 @@ export default class MME extends Operator {
             // s1.faceuse!.link(newfu1)
             // s2.faceuse!.link(newfu2);
 
-            fill_fu(newfu1, s1, newfu2, newlu1, fu_v1!.orientation, this.newFace);
-            fill_fu(newfu2, s2, newfu1, newlu2, fu_v1!.mate!.orientation, this.newFace);
+            newfu1.fill_fu(s1, newfu2, newlu1, fu_v1!.orientation, this.newFace);
+            newfu2.fill_fu(s2, newfu1, newlu2, fu_v1!.mate!.orientation, this.newFace);
     
             this.newLoop.loopuse = newlu1;
 
@@ -192,17 +192,16 @@ export default class MME extends Operator {
                 newvu3 = new VertexUse();
                 newvu4 = new VertexUse();
 
-                fill_lu_edgeuse(newlu1, newfu1, newlu2, this.newLoop, neweu1);
-                fill_lu_edgeuse(newlu2, newfu2, newlu1, this.newLoop, neweu4);
-                fill_eu_loopuse(neweu1, newvu1, neweu4, this.newEdge, newlu1, null, null, neweu2, Orientation.SAME);
-                fill_eu_loopuse(neweu2, newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
-                fill_eu_loopuse(neweu3, newvu2, neweu2, this.newEdge, lu_v2!, null, null, neweu4, Orientation.SAME);
-                fill_eu_loopuse(neweu4, newvu4, neweu1, this.newEdge, newlu2, null, null, neweu3, Orientation.OPPOSITE);
+                newlu1.fill_lu_edgeuse(newfu1, newlu2, this.newLoop, neweu1);
+                newlu2.fill_lu_edgeuse(newfu2, newlu1, this.newLoop, neweu4);
+                neweu1.fill_eu_loopuse(newvu1, neweu4, this.newEdge, newlu1, null, null, neweu2, Orientation.SAME);
+                neweu2.fill_eu_loopuse(newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
+                neweu3.fill_eu_loopuse(newvu2, neweu2, this.newEdge, lu_v2!, null, null, neweu4, Orientation.SAME);
+                neweu4.fill_eu_loopuse(newvu4, neweu1, this.newEdge, newlu2, null, null, neweu3, Orientation.OPPOSITE);
 
-                fill_vu_edgeuse(newvu1, this.v1, neweu1);
-                fill_vu_edgeuse(newvu2, this.v1, neweu3);
-                fill_vu_edgeuse(newvu3, this.v1, neweu2);
-                fill_vu_edgeuse(newvu4, this.v1, neweu4);
+                newvu1.fill_vu_edgeuse(this.v1, neweu3);
+                newvu3.fill_vu_edgeuse(this.v1, neweu2);
+                newvu4.fill_vu_edgeuse(this.v1, neweu4);
 
                 if(eu_v1) {
                     link_vu(newvu1, this.v1, DescType.EDGEUSE, this.newEdge, null);
@@ -245,25 +244,25 @@ export default class MME extends Operator {
                 newvu4 = new VertexUse();
 
                 if (this.dir1 == Direction.CW) {
-                    fill_lu_edgeuse(newlu1, newfu1, newlu2, this.newLoop, neweu2);
-                    fill_lu_edgeuse(newlu2, newfu2, newlu1, this.newLoop, neweu3);
-                    fill_eu_loopuse(neweu1, newvu1, neweu4, this.newEdge, lu_v1!, null, null, neweu2, Orientation.SAME);
-                    fill_eu_loopuse(neweu2, newvu3, neweu3, this.newEdge, newlu1, null, null, neweu1, Orientation.OPPOSITE);
-                    fill_eu_loopuse(neweu3, newvu2, neweu2, this.newEdge, newlu2, null, null, neweu4, Orientation.SAME);
-                    fill_eu_loopuse(neweu4, newvu4, neweu1, this.newEdge, lu_v2!, null, null, neweu3, Orientation.OPPOSITE);
+                    newlu1.fill_lu_edgeuse(newfu1, newlu2, this.newLoop, neweu2);
+                    newlu2.fill_lu_edgeuse(newfu2, newlu1, this.newLoop, neweu3);
+                    neweu1.fill_eu_loopuse(newvu1, neweu4, this.newEdge, lu_v1!, null, null, neweu2, Orientation.SAME);
+                    neweu2.fill_eu_loopuse(newvu3, neweu3, this.newEdge, newlu1, null, null, neweu1, Orientation.OPPOSITE);
+                    neweu3.fill_eu_loopuse(newvu2, neweu2, this.newEdge, newlu2, null, null, neweu4, Orientation.SAME);
+                    neweu4.fill_eu_loopuse(newvu4, neweu1, this.newEdge, lu_v2!, null, null, neweu3, Orientation.OPPOSITE);
                 } else {
-                    fill_lu_edgeuse(newlu1, newfu1, newlu2, this.newLoop, neweu1);
-                    fill_lu_edgeuse(newlu2, newfu2, newlu1, this.newLoop, neweu4);
-                    fill_eu_loopuse(neweu1, newvu1, neweu4, this.newEdge, newlu1, null, null, neweu2, Orientation.SAME);
-                    fill_eu_loopuse(neweu2, newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
-                    fill_eu_loopuse(neweu3, newvu2, neweu2, this.newEdge, lu_v2!, null, null, neweu4, Orientation.SAME);
-                    fill_eu_loopuse(neweu4, newvu4, neweu1, this.newEdge, newlu2, null, null, neweu3, Orientation.OPPOSITE);
+                    newlu1.fill_lu_edgeuse(newfu1, newlu2, this.newLoop, neweu1);
+                    newlu2.fill_lu_edgeuse(newfu2, newlu1, this.newLoop, neweu4);
+                    neweu1.fill_eu_loopuse(newvu1, neweu4, this.newEdge, newlu1, null, null, neweu2, Orientation.SAME);
+                    neweu2.fill_eu_loopuse(newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
+                    neweu3.fill_eu_loopuse(newvu2, neweu2, this.newEdge, lu_v2!, null, null, neweu4, Orientation.SAME);
+                    neweu4.fill_eu_loopuse(newvu4, neweu1, this.newEdge, newlu2, null, null, neweu3, Orientation.OPPOSITE);
                 }
 
-                fill_vu_edgeuse(newvu1, this.v1, neweu1);
-                fill_vu_edgeuse(newvu2, this.v1, neweu3);
-                fill_vu_edgeuse(newvu3, this.v2, neweu2);
-                fill_vu_edgeuse(newvu4, this.v2, neweu4);
+                newvu1.fill_vu_edgeuse(this.v1, neweu1);
+                newvu2.fill_vu_edgeuse(this.v1, neweu3);
+                newvu3.fill_vu_edgeuse(this.v2, neweu2);
+                newvu4.fill_vu_edgeuse(this.v2, neweu4);
 
                 link_vu(newvu1, this.v1, DescType.EDGEUSE, this.newEdge, null);
                 link_vu(newvu2, this.v1, DescType.EDGEUSE, this.newEdge, null);
@@ -305,17 +304,17 @@ export default class MME extends Operator {
                 lu_v1!.mate!.down = DescType.EDGEUSE;
 
                 // now the new edgeuses that depend on these vertexuses
-                fill_eu_loopuse(neweu1, newvu1, neweu4, this.newEdge, lu_v1!, null, null, neweu2, Orientation.SAME);
-                fill_eu_loopuse(neweu3, newvu2, neweu2, this.newEdge, lu_v1!.mate!, null, null, neweu4, Orientation.SAME);
+                neweu1.fill_eu_loopuse(newvu1, neweu4, this.newEdge, lu_v1!, null, null, neweu2, Orientation.SAME);
+                neweu3.fill_eu_loopuse(newvu2, neweu2, this.newEdge, lu_v1!.mate!, null, null, neweu4, Orientation.SAME);
             } else {
                 newvu1 = new VertexUse();
                 newvu2 = new VertexUse();
 
-                fill_vu_edgeuse(newvu1, this.v1, neweu1);
-                fill_vu_edgeuse(newvu2, this.v1, neweu3);
+                newvu1.fill_vu_edgeuse(this.v1, neweu1);
+                newvu2.fill_vu_edgeuse(this.v1, neweu3);
 
-                fill_eu_loopuse(neweu1, newvu1, neweu4, this.newEdge, lu_v1!, null, null, neweu2, Orientation.SAME);
-                fill_eu_loopuse(neweu3, newvu2, neweu2, this.newEdge, lu_v1!.mate!, null, null, neweu4, Orientation.SAME);
+                neweu1.fill_eu_loopuse(newvu1, neweu4, this.newEdge, lu_v1!, null, null, neweu2, Orientation.SAME);
+                neweu3.fill_eu_loopuse(newvu2, neweu2, this.newEdge, lu_v1!.mate!, null, null, neweu4, Orientation.SAME);
 
                 link_vu(newvu1, this.v1, DescType.EDGEUSE, this.newEdge, null);
                 link_vu(newvu2, this.v1, DescType.EDGEUSE, this.newEdge, null);
@@ -337,19 +336,19 @@ export default class MME extends Operator {
                 lu_v2!.down = DescType.EDGEUSE;
                 lu_v2!.mate!.down = DescType.EDGEUSE;
 
-                fill_eu_loopuse(neweu2, newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
-                fill_eu_loopuse(neweu4, newvu4, neweu1, this.newEdge, lu_v1!.mate!, null, null, neweu3, Orientation.OPPOSITE);
+                neweu2.fill_eu_loopuse(newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
+                neweu2.fill_eu_loopuse(newvu4, neweu1, this.newEdge, lu_v1!.mate!, null, null, neweu3, Orientation.OPPOSITE);
             } else {
                 // the second vertex is not a loop vertex
                 // we create new vertexuses for the existing vertex
                 newvu3 = new VertexUse();
                 newvu4 = new VertexUse();
 
-                fill_vu_edgeuse(newvu3, this.v2, neweu2);
-                fill_vu_edgeuse(newvu4, this.v2, neweu4);
+                newvu3.fill_vu_edgeuse(this.v2, neweu2);
+                newvu4.fill_vu_edgeuse(this.v2, neweu4);
 
-                fill_eu_loopuse(neweu2, newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
-                fill_eu_loopuse(neweu4, newvu4, neweu1, this.newEdge, lu_v1!.mate!, null, null, neweu3, Orientation.OPPOSITE);
+                neweu2.fill_eu_loopuse(newvu3, neweu3, this.newEdge, lu_v1!, null, null, neweu1, Orientation.OPPOSITE);
+                neweu4.fill_eu_loopuse(newvu4, neweu1, this.newEdge, lu_v1!.mate!, null, null, neweu3, Orientation.OPPOSITE);
 
                 link_vu(newvu3, this.v2, DescType.EDGEUSE, this.newEdge, null);
                 link_vu(newvu4, this.v2, DescType.EDGEUSE, this.newEdge, null);

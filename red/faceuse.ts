@@ -26,4 +26,12 @@ export default class FaceUse extends CircularDoublyLinkedListItem {
 
         this.id = FaceUse.counter;
     }
+
+    fill_fu(shell: Shell, mate: FaceUse, lu: LoopUse, orient: Orientation, face: Face){
+        this.owningShell = shell;
+        this.mate = mate;
+        this.loopuse = lu;
+        this.orientation = orient;
+        this.face = face;
+    }
 }
