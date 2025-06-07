@@ -30,6 +30,12 @@ interface Attribute {
 
 }
 
+enum QueryType {
+    FIRST,
+    LAST,
+    NEXT,
+    PREVIOUS
+}
 
 
-export { DescType, Orientation, Direction, Attribute };
+export { DescType, Orientation, Direction, Attribute, QueryType };

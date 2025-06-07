@@ -188,7 +188,7 @@ export default class OBJFileIO implements Importer, Exporter {
         const visited_vertices = new Map<number, boolean>();
         do {
             let shell_t = region_t.shell;
-            if (shell_t.faceuse.orientation != Orientation.INSIDE) {
+            if (shell_t.faceuse.orientation != Orientation.OUTSIDE) {
                 shell_t = shell_t.faceuse.mate.owningShell;
                 region_t = shell_t.region;
                 continue;
@@ -211,7 +211,7 @@ export default class OBJFileIO implements Importer, Exporter {
                     faces.set(fu_t.face.id, [...(faces.get(fu_t.face.id) || []), eu_t.vertexUse.vertex.id]);
 
                     eu_t = eu_t.clockwiseEdgeUse;
-                } while (eu_t != first_eu);
+                } while (eu_t !== first_eu);
 
                 fu_t = fu_t.next;
             } while (fu_t !== first_fu);

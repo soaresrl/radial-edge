@@ -7,6 +7,9 @@ export let resultErrBound: number;
 export let ccwerrboundA: number;
 export let ccwerrboundB: number;
 export let ccwerrboundC: number;
+export let o3derrboundA: number;
+export let o3derrboundB: number;
+export let o3derrboundC: number;
 
 export function exactinit() {
     let half: number = 0.5;
@@ -34,6 +37,10 @@ export function exactinit() {
     ccwerrboundA = (3.0 + 16.0 * epsilon) * epsilon;
     ccwerrboundB = (2.0 + 12.0 * epsilon) * epsilon;
     ccwerrboundC = (9.0 + 64.0 * epsilon) * epsilon * epsilon;
+
+    o3derrboundA = (7.0 + 56.0 * epsilon) * epsilon;
+    o3derrboundB = (3.0 + 28.0 * epsilon) * epsilon;
+    o3derrboundC = (26.0 + 288.0 * epsilon) * epsilon * epsilon;
 }
 
 export function Split(a: number) {
@@ -45,6 +52,19 @@ export function Split(a: number) {
     let alo = a - ahi;
 
     return [ahi, alo];
+}
+
+export function TwoProductPresplit(a: number, b: number, bhi: number, blo: number){ 
+    let x = a * b;
+    let [ahi, alo] = Split(a)
+
+    let err1 = x - (ahi * bhi);
+    let err2 = err1 - (alo * bhi);
+    let err3 = err2 - (ahi * blo);
+
+    let y = (alo * blo) - err3;
+
+    return [x, y];
 }
 
 /**
@@ -68,6 +88,18 @@ export function TwoProduct(a: number, b: number) {
     let y = (alo * blo) - err3;
 
     return [x, y]
+}
+
+export function TwoOneProduct(a1: number, a0: number, b: number) {
+    let [bhi, blo] = Split(b);
+    let [_i, x0] = TwoProductPresplit(a0, b, bhi, blo);
+    let [_j, _0] = TwoProductPresplit(a1, b, bhi, blo);
+    let [_k, x1] = TwoSum(_i, _0);
+
+    let [x3, x2] = FastTwoSum(_j, _k);
+
+
+    return [x3, x2, x1, x0];
 }
 
 /**
@@ -214,10 +246,3 @@ export function ExpansionSum(e: Expansion, f: Expansion) {
 }
 
 exactinit();
-const a = 2.12
-const b = 1.23
-
-const [x, y] = TwoProduct(a, b);
-
-console.log(x);
-console.log(y);

@@ -18,16 +18,13 @@ export class MEV extends Operator {
     public new_edge: Edge;
     public new_vertex: Vertex;
 
-    constructor(vertex_begin: Vertex, region: Region /*, point: Point*/) {
+    constructor(vertex_begin: Vertex, region: Region, new_edge: Edge, new_vertex: Vertex) {
         super();    
 
         this.vertex_begin = vertex_begin;
         this.region = region;
-
-        this.new_edge = new Edge();
-        
-        // TODO: add Point on vertex constructor
-        this.new_vertex = new Vertex();
+        this.new_edge = new_edge;
+        this.new_vertex = new_vertex;
     }
 
     execute(): void {
