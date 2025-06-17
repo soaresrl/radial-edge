@@ -12,6 +12,11 @@ import { plane, hemisphere, wave } from './examples/meshes/superfie_1';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import BoundingBox from './utils/bbox';
 
+type Pair<T, U> = {
+    first: T,
+    second: U
+}
+
 // Função para ler .obj e criar triângulos
 function readObjFile(fileContent: string): Triangle[] {
     const lines = fileContent.split('\n');
@@ -85,8 +90,8 @@ function readObjFile(fileContent: string): Triangle[] {
 // const meshSize = 500;
 // Crie a RTree e insira triângulos aleatórios
 const rtree = new RTree(5);
-const mesh1: Triangle[] = readObjFile(plane)
-const mesh2: Triangle[] = readObjFile(hemisphere);
+const mesh1: Triangle[] = readObjFile(wave)
+const mesh2: Triangle[] = readObjFile(plane);
 // for (let i = 0; i < meshSize; i++) {
 //     const tri = i % 2 == 0 ? randomTriangleLeft() : randomTriangleRight();
 //     mesh1.push(tri);
@@ -144,27 +149,38 @@ mesh1.forEach(triangle => {
     rtree.insert(triangle);
 });
 
-// mesh2.forEach(tri => {
-//     const geometry = new THREE.BufferGeometry();
-//     // const geometry = new THREE.BoxGeometry(10, 10, 10);
-//     const points = [] as any[];
-//     points.push(new THREE.Vector3(tri.a.x, tri.a.y, tri.a.z));
-//     points.push(new THREE.Vector3(tri.b.x, tri.b.y, tri.b.z));
-//     points.push(new THREE.Vector3(tri.c.x, tri.c.y, tri.c.z));
-//     points.push(new THREE.Vector3(tri.a.x, tri.a.y, tri.a.z));
-//     geometry.setFromPoints(points);
+mesh2.forEach(tri => {
+    const geometry = new THREE.BufferGeometry();
+    // const geometry = new THREE.BoxGeometry(10, 10, 10);
+    const points = [] as any[];
+    points.push(new THREE.Vector3(tri.a.x, tri.a.y, tri.a.z));
+    points.push(new THREE.Vector3(tri.b.x, tri.b.y, tri.b.z));
+    points.push(new THREE.Vector3(tri.c.x, tri.c.y, tri.c.z));
+    points.push(new THREE.Vector3(tri.a.x, tri.a.y, tri.a.z));
+    geometry.setFromPoints(points);
     
-//     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-//     const line = new THREE.Line(geometry, material);
-//     // const box = new THREE.Mesh(geometry, material)
-//     scene.add(line);     
-// });
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const line = new THREE.Line(geometry, material);
+    // const box = new THREE.Mesh(geometry, material)
+    scene.add(line);     
+});
 
 let bboxMesh: THREE.Line;
+let boxes: THREE.Line[] = [];
 
 // Função para desenhar uma bounding box
 function drawBoundingBox(bbox: BoundingBox, color: number, removePrevious: boolean = true) {
-    if(removePrevious) scene.remove(bboxMesh);
+    if(removePrevious) {
+        scene.remove(bboxMesh);
+        console.log(boxes)
+        if (boxes.length) {
+            console.log("should've been removed")
+            for(let child of boxes) {
+                scene.remove(child);
+            }
+            boxes = []
+        }
+    }
 
     const min = bbox.expandedBbox().min;
     const max = bbox.expandedBbox().max;
@@ -194,12 +210,13 @@ function drawBoundingBox(bbox: BoundingBox, color: number, removePrevious: boole
 
     } else {
         const line = new THREE.Line(geometry, material);
+        boxes.push(line);
         scene.add(line);
     }
 
 }
 
-function intersectWithRTree(): Point[] {
+function intersectWithRTree() {
     // Monta RTree com os triângulos da primeira malha
     // mesh1.forEach(triangle => {
     //     rtree.insert(triangle);
@@ -403,7 +420,7 @@ console.timeEnd('RTree Intersection');
 
 console.time('Naive Intersection');
 const intersectionsNaive = intersectNaive();
-console.timeEnd('Naive Intersection')
+console.timeEnd('Naive Intersection');
 
 let i = 0;
 document.addEventListener('keydown', (ev) => {
@@ -417,12 +434,23 @@ document.addEventListener('keydown', (ev) => {
 let linesGroup = new THREE.Group();
 let trianglesGroup = new THREE.Group();
 function showRtreeLeaves(node: Node) {
-    console.log(node.children.length);
+    // console.log(node.children.length);
     drawBoundingBox(node.bbox, 0xff00ff, true);
 
     scene.remove(trianglesGroup);
     trianglesGroup.clear();
     linesGroup.clear();
+
+    let parent = node.parent;
+    while (parent != null) {
+        if(parent.parent == null) {
+            drawBoundingBox(parent.bbox, 0x0000ff, false);
+        } else {
+            drawBoundingBox(parent.bbox, 0x00ff00, false);
+        }
+
+        parent = parent.parent;
+    }
 
     node.children.forEach((tri)=>{
         if (tri instanceof Triangle) {
@@ -441,7 +469,7 @@ function showRtreeLeaves(node: Node) {
             linesGroup.add(line);
         }
         trianglesGroup.add(linesGroup);
-    })
+    });
 
     scene.add(trianglesGroup);
 }
@@ -462,7 +490,6 @@ console.log('Interseções encontradas (naive):', intersectionsNaive.length);
 // Percorre a RTree e desenha as bounding boxes dos nós
 function renderRTreeBoundingBoxes(rtree: RTree) {
     const stack = [rtree.root];
-    console.log("render rtree")
 
     while (stack.length > 0) {
         const node = stack.pop();
@@ -475,7 +502,7 @@ function renderRTreeBoundingBoxes(rtree: RTree) {
         if (!node.isLeaf) {
             for (const child of node.children) {
                 // Só empilha se for nó (não GeoObject)
-                if (child instanceof Object && 'isLeaf' in child) {
+                if (child instanceof Node) {
                     stack.push(child);
                 }
             }
@@ -505,6 +532,8 @@ intersections.forEach(intersection => {
         scene.add(dot);        
     }
 });
+
+// drawBoundingBox(rtree.root.bbox, 0x0000ff, false);
 
 // Renderize as bounding boxes dos nós da RTree
 // renderRTreeBoundingBoxes(rtree);

@@ -37,7 +37,7 @@ export default class BoundingBox {
             }
         }
 
-        // check if bounding box collapses in one dimension and expand for a minimun
+        // check if bounding box collapses in one dimension and expand for a minimum
         let epsilon = 0.01;
         if (maxX - minX < epsilon) {
             let center = (maxX + minX) / 2;

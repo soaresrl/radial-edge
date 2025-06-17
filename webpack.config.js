@@ -2,8 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./visualize_mesh.ts", //"./main.ts", // ponto de entrada './test_intersection.ts',
-  //target: "node",
+  entry:  "./visualize_mesh.ts", //"./main.ts",//"./visualize_mesh.ts", // ponto de entrada './test_intersection.ts',
+  target: "web",
   module: {
     rules: [
       {

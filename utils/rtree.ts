@@ -6,6 +6,7 @@ export class Node {
     public isLeaf: boolean;
     public children: (GeoObject | Node)[] = [];
     public bbox: BoundingBox;
+    public parent: Node = null;
     
     constructor(isLeaf: boolean) {
         this.isLeaf = isLeaf;
@@ -40,17 +41,24 @@ export default class RTree {
         this.leaves.push(this.root);
     }
 
-    insert(obj: GeoObject): Node | null {
+    insert(obj: GeoObject) {
         const leaf = this.chooseLeaf(this.root, obj);
         
         leaf.children.push(obj);
         leaf.updateBoundingBox();
 
         if (leaf.children.length > this.maxEntries) {
-            return this.splitNode(leaf);
+            this.splitNode(leaf);
         }
 
-        return leaf;
+        // TODO: verificar guardar ponteiro para o parent para evitar buscar toda vez
+        let parent = this.findParent(this.root, leaf);
+
+        while (parent != null) {
+            parent.updateBoundingBox();
+
+            parent = this.findParent(this.root, parent);
+        }
     }
 
     chooseLeaf(node: Node, obj: GeoObject): Node {
@@ -95,8 +103,9 @@ export default class RTree {
         return this.chooseLeaf(bestChild!, obj);
     }
 
-    splitNode(node: Node): Node {
+    splitNode(node: Node) {
         const parent = this.findParent(this.root, node);
+        // const parent = node.parent;
 
         const newNode = new Node(node.isLeaf);
 
@@ -119,16 +128,19 @@ export default class RTree {
             newRoot.children.push(newNode);
             newRoot.updateBoundingBox();
             this.root = newRoot;
+
+            node.parent = newRoot;
+            newNode.parent = newRoot;
         } else {
             parent.children.push(newNode);
             parent.updateBoundingBox();
 
+            newNode.parent = parent;
+
             if (parent.children.length > this.maxEntries) {
-                return this.splitNode(parent);
+                this.splitNode(parent);
             }
         }
-
-        return newNode;
     }
 
     findParent(current: Node, target: Node): Node | null {
