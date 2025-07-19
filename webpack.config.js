@@ -2,8 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry:  "./visualize_mesh.ts", //"./main.ts",//"./visualize_mesh.ts", // ponto de entrada './test_intersection.ts',
-  target: "web",
+  entry:  "./test_triangulation_red.ts",//"./visualize_mesh.ts",//"./test_triangulation_red.ts",//"./visualize_mesh.ts", // ponto de entrada './test_intersection.ts',
+  target: "web",//"node", //"web",
   module: {
     rules: [
       {
@@ -17,7 +17,7 @@ module.exports = {
     extensions: [".ts", ".js"] // para importar sem extensão
   },
   output: {
-    filename: "bundle.js",
+    filename: "bundle_red.js",
     path: path.resolve(__dirname, "dist")
   },
   mode: "development", // ou "production",

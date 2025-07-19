@@ -32,8 +32,20 @@ export default class Intersection {
         const b = triangle.b;
         const c = triangle.c;
 
-        const r = segment.start;
-        const s = segment.end;
+        let r: Point = segment.start;
+        let s: Point = segment.end;
+
+        // Ordenação Lexicográfica
+        if (segment.start.x > segment.end.x) {
+            r = segment.end;
+            s = segment.start;
+        } else if (segment.start.y > segment.end.y) {
+            r = segment.end;
+            s = segment.start;
+        } else if (segment.start.z > segment.end.z) {
+            r = segment.end;
+            s = segment.start;
+        }   
 
         // let abcr = Orient3D(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z, r.x, r.y, r.z);
         let rbca = Orient3D(r.x, r.y, r.z, b.x, b.y, b.z, c.x, c.y, c.z, a.x, a.y, a.z);

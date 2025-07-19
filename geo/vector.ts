@@ -45,4 +45,12 @@ export default class Vector {
     multiply(scalar: number): Vector {
         return new Vector(this.x * scalar, this.y * scalar, this.z * scalar);
     }
+
+    isEqual(other: Vector) {
+        return (
+            this.x == other.x &&
+            this.y == other.y && 
+            this.z == other.z
+        )
+    }
 }

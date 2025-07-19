@@ -55,8 +55,6 @@ export default class ME extends Operator {
             return;
         }
 
-        
-
         if (vu_v1.up == DescType.SHELL) {
             newvu2 = vu_v1;
         } else {

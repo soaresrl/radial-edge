@@ -1,6 +1,7 @@
 import Point from "../geo/point";
 import { DescType, Orientation } from "../red/definitions";
 import Model from "../red/model";
+import Tesselation from "../utils/tesselate";
 import Exporter from "./exporter";
 import Importer from "./importer";
 
@@ -237,10 +238,25 @@ export default class OBJFileIO implements Importer, Exporter {
             // console.log("v ", [vertices_points.get(vertex).x, vertices_points.get(vertex).y, vertices_points.get(vertex).z].join(" "));
         }
 
+        // let tris: number[][] = [];
         for (let [face, vertices] of faces){
             str += `f ${vertices.join(" ")}\n`;
-            // console.log("f ", vertices.join(" "));
+
+            // console.log(vertices);
+            // const points = vertices.map((v_id) => {
+            //     return obj_vertices_points.get(v_id)
+            // });
+            // const tesResult = Tesselation.tesselate3D(points)
+
+            // tris = [...tris, ...tesResult.map(tri => tri.map(id => vertices[id]))];
         }
+        // console.log(tris.length)
+
+        // for(let tri of tris) {
+        //     str += `f ${tri.join(" ")}\n`;
+
+        //     console.log(tri)
+        // }
 
         return str;
     }

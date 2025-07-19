@@ -119,7 +119,6 @@ controls.update();
 // Adiciona linhas das bounding boxes dos triângulos
 mesh1.forEach(tri => {
     const geometry = new THREE.BufferGeometry();
-    // const geometry = new THREE.BoxGeometry(10, 10, 10);
     const points = [] as any[];
     points.push(new THREE.Vector3(tri.a.x, tri.a.y, tri.a.z));
     points.push(new THREE.Vector3(tri.b.x, tri.b.y, tri.b.z));
@@ -129,20 +128,7 @@ mesh1.forEach(tri => {
     
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const line = new THREE.Line(geometry, material);
-    // const box = new THREE.Mesh(geometry, material)
     scene.add(line);
-
-    
-    // [tri.a, tri.b, tri.c].forEach((p)=>{
-    //     if (p.z === 0.0) {
-            
-    //         const dotGeometry = new THREE.BufferGeometry();
-    //         dotGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([p.x, p.y, p.z]), 3));
-    //         const dotMaterial = new THREE.PointsMaterial({ size: 0.01, color: 0xffff00 });
-    //         const dot = new THREE.Points(dotGeometry, dotMaterial);
-    //         scene.add(dot); 
-    //     }
-    // })
 });
 
 mesh1.forEach(triangle => {
@@ -360,7 +346,7 @@ function intersectWithRTreeStepByStep(triangle: Triangle) {
                 points.push(new THREE.Vector3(tri.a.x, tri.a.y, tri.a.z));
                 geometry.setFromPoints(points);
                 
-                const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
                 const line = new THREE.Line(geometry, material);
                 // const box = new THREE.Mesh(geometry, material)
                 scene.add(line); 

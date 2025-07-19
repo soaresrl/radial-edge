@@ -35,9 +35,9 @@ const mmr = new MMR(model, region1);
 mmr.execute();
 
 Cube.generate(region1, new Point(0, 2.5, 0), 2, 5, 2);
-Cube.generate(region1, new Point(0, 5, 3), 2, 10, 2);
-Cube.generate(region1, new Point(3, 7.5, 0), 2, 15, 2);
-Cube.generate(region1, new Point(3, 10, 3), 2, 20, 2);
+// Cube.generate(region1, new Point(0, 5, 3), 2, 10, 2);
+// Cube.generate(region1, new Point(3, 7.5, 0), 2, 15, 2);
+// Cube.generate(region1, new Point(3, 10, 3), 2, 20, 2);
 // mme2.execute();
 // mme3.execute();
 

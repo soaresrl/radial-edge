@@ -1,5 +1,6 @@
 import GeoObject from "../geo/object";
 import Point from "../geo/point";
+import Model from "../red/model";
 import BoundingBox from "./bbox";
 
 export class Node {
@@ -59,6 +60,28 @@ export default class RTree {
 
             parent = this.findParent(this.root, parent);
         }
+    }
+
+    buildFromModel(model: Model) {
+        let region_t = model.region;
+        const first_region = model.region;
+
+        do {
+            if (region_t.shell.faceuse.mate == first_region.shell.faceuse) break;
+
+            let shell_t = region_t.shell;
+            let fu_t = shell_t.faceuse
+            const first_fu = shell_t.faceuse;
+            
+            do {
+                console.log("insert")
+                this.insert(fu_t.face);
+
+                fu_t = fu_t.next
+            } while (fu_t != first_fu)
+
+            region_t = region_t.next;
+        } while (region_t != first_region)
     }
 
     chooseLeaf(node: Node, obj: GeoObject): Node {

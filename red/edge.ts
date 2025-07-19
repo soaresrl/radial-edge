@@ -16,6 +16,8 @@ export default class Edge extends CircularDoublyLinkedListItem {
 
     public attribute?: Attribute;
 
+    public visited: boolean = false;
+
     constructor(){
         super();
 

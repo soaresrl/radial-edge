@@ -3,14 +3,12 @@ import GeoObject from "./object";
 import Point from "./point";
 import Vector from "./vector";
 
-export default class Triangle extends GeoObject {
+export default class Triangle implements GeoObject {
     public a: Point;
     public b: Point;
     public c: Point;
 
     constructor(a: Point, b: Point, c: Point) {
-        super();
-        
         this.a = a;
         this.b = b;
         this.c = c;
