@@ -1,6 +1,7 @@
 import Point from "../geo/point";
 import { DescType, Orientation } from "../red/definitions";
 import Model from "../red/model";
+import Tesselation from "../utils/tesselate";
 import Exporter from "./exporter";
 import Importer from "./importer";
 
@@ -183,16 +184,20 @@ export default class OBJFileIO implements Importer, Exporter {
 
         let region_t = this.model.region;
 
-        const vertices = [];
-        const vertices_points = new Map<number, Point>();
-        const visited_vertices = new Map<number, boolean>();
+        const obj_vertices: Array<number> = [];
+        const obj_vertices_points = new Map<number, Point>();
+
+        let obj_vertex_index = 1;
+        const map_brep_to_obj_vertex = new Map<number, number>();
         do {
+            console.log("Region: ", region_t.id)
+            if (region_t.id == 1) break;
             let shell_t = region_t.shell;
-            if (shell_t.faceuse.orientation != Orientation.INSIDE) {
-                shell_t = shell_t.faceuse.mate.owningShell;
-                region_t = shell_t.region;
-                continue;
-            }
+            // if (shell_t.faceuse.orientation != Orientation.OUTSIDE) {
+            //     shell_t = shell_t.faceuse.mate.owningShell;
+            //     region_t = shell_t.region;
+            //     continue;
+            // }
 
             const first_fu = shell_t.faceuse;
             let fu_t = shell_t.faceuse;
@@ -200,18 +205,26 @@ export default class OBJFileIO implements Importer, Exporter {
             do {
                 const first_eu = fu_t.loopuse.edgeuse;
                 let eu_t = fu_t.loopuse.edgeuse;
+                console.log("Face: ", fu_t.face.id);
 
                 do {
-                    if (!visited_vertices.has(eu_t.vertexUse.vertex.id)){
-                        vertices.push(eu_t.vertexUse.vertex.id);
-                        vertices_points.set(eu_t.vertexUse.vertex.id, eu_t.vertexUse.vertex.point);
-                        visited_vertices.set(eu_t.vertexUse.vertex.id, true);
+                    if (!map_brep_to_obj_vertex.has(eu_t.vertexUse.vertex.id)){
+                        map_brep_to_obj_vertex.set(eu_t.vertexUse.vertex.id, obj_vertex_index);
+                        obj_vertices.push(obj_vertex_index)
+                        obj_vertices_points.set(obj_vertex_index, eu_t.vertexUse.vertex.point);
+
+                        obj_vertex_index++;
+                    }
+                    console.log("vertex: ", eu_t.vertexUse.vertex.id, "coords:", `x: ${eu_t.vertexUse.vertex.point.x}, y: ${eu_t.vertexUse.vertex.point.y}, z: ${eu_t.vertexUse.vertex.point.z}`)
+
+                    if(!faces.get(fu_t.face.id)){
+                        faces.set(fu_t.face.id, [map_brep_to_obj_vertex.get(eu_t.vertexUse.vertex.id)])
+                    } else {
+                        faces.get(fu_t.face.id).push(map_brep_to_obj_vertex.get(eu_t.vertexUse.vertex.id));
                     }
 
-                    faces.set(fu_t.face.id, [...(faces.get(fu_t.face.id) || []), eu_t.vertexUse.vertex.id]);
-
                     eu_t = eu_t.clockwiseEdgeUse;
-                } while (eu_t != first_eu);
+                } while (eu_t !== first_eu);
 
                 fu_t = fu_t.next;
             } while (fu_t !== first_fu);
@@ -219,16 +232,31 @@ export default class OBJFileIO implements Importer, Exporter {
             region_t = region_t.next;
         } while (region_t !== first_region);
 
-        vertices.sort();
-        for (let vertex of vertices){
-            str += `v ${vertices_points.get(vertex).x} ${vertices_points.get(vertex).y} ${vertices_points.get(vertex).z}\n`;
+        // vertices.sort();
+        for (let vertex of obj_vertices){
+            str += `v ${obj_vertices_points.get(vertex).x} ${obj_vertices_points.get(vertex).y} ${obj_vertices_points.get(vertex).z}\n`;
             // console.log("v ", [vertices_points.get(vertex).x, vertices_points.get(vertex).y, vertices_points.get(vertex).z].join(" "));
         }
 
+        // let tris: number[][] = [];
         for (let [face, vertices] of faces){
             str += `f ${vertices.join(" ")}\n`;
-            // console.log("f ", vertices.join(" "));
+
+            // console.log(vertices);
+            // const points = vertices.map((v_id) => {
+            //     return obj_vertices_points.get(v_id)
+            // });
+            // const tesResult = Tesselation.tesselate3D(points)
+
+            // tris = [...tris, ...tesResult.map(tri => tri.map(id => vertices[id]))];
         }
+        // console.log(tris.length)
+
+        // for(let tri of tris) {
+        //     str += `f ${tri.join(" ")}\n`;
+
+        //     console.log(tri)
+        // }
 
         return str;
     }

@@ -1,3 +1,4 @@
+import { link_vu } from "../utils";
 import { DescType, Orientation } from "../definitions";
 import Face from "../face";
 import FaceUse from "../faceuse";
@@ -5,7 +6,6 @@ import Loop from "../loop";
 import LoopUse from "../loopuse";
 import Region from "../region";
 import Shell from "../shell";
-import { fill_fu, fill_lu_vertexuse, fill_s_faceuse, fill_vu_loopuse, link_vu } from "../utils";
 import Vertex from "../vertex";
 import VertexUse from "../vertexuse";
 import Operator from "./operator";
@@ -55,7 +55,7 @@ export default class MRSFL extends Operator {
         this.newRegion.model = this.region.model;
         this.newRegion.shell = this.newShell;
 
-        fill_s_faceuse(this.newShell, this.newRegion, newfu1);
+        this.newShell.fill_s_faceuse(this.newRegion, newfu1);
 
         this.newFace.faceuse = newfu1;
         this.newLoop.loopuse = newlu1;
@@ -63,14 +63,14 @@ export default class MRSFL extends Operator {
         newfu1.next = newfu1;
         newfu1.last = newfu1;
 
-        fill_fu(newfu1, this.newShell, newfu2, newlu1, Orientation.INSIDE, this.newFace);
+        newfu1.fill_fu(this.newShell, newfu2, newlu1, Orientation.INSIDE, this.newFace);
 
         newlu1.next = newlu1;
         newlu1.last = newlu1;
 
-        fill_lu_vertexuse(newlu1, newfu1, newlu2, this.newLoop, newvu1);
+        newlu1.fill_lu_vertexuse(newfu1, newlu2, this.newLoop, newvu1);
 
-        fill_vu_loopuse(newvu1, this.vertex, newlu1);
+        newvu1.fill_vu_loopuse(this.vertex, newlu1);
         
         if (vertexHasUseInRegion.vu!.up == DescType.SHELL) {
             /*	first the case where this vertex was the only thing
@@ -80,12 +80,12 @@ export default class MRSFL extends Operator {
             newfu2.next = newfu2;
             newfu2.last = newfu2;
 
-            fill_fu(newfu2, vertexHasUseInRegion.s!, newfu1, newlu2, Orientation.OUTSIDE, this.newFace);
+            newfu2.fill_fu(vertexHasUseInRegion.s!, newfu1, newlu2, Orientation.OUTSIDE, this.newFace);
 
             newlu2.next = newlu2;
             newlu2.last = newlu2;
 
-            fill_lu_vertexuse(newlu2, newfu2, newlu1, this.newLoop, vertexHasUseInRegion.vu!);
+            newlu2.fill_lu_vertexuse(newfu2, newlu1, this.newLoop, vertexHasUseInRegion.vu!);
 
             // now update existing structures
             vertexHasUseInRegion.s!.desc_type = DescType.FACEUSE;
@@ -106,16 +106,16 @@ export default class MRSFL extends Operator {
             newlu2.next = newlu2;
             newlu2.last = newlu2;
 
-            fill_lu_vertexuse(newlu2, newfu2,newlu1, this.newLoop, newvu2);
+            newlu2.fill_lu_vertexuse(newfu2,newlu1, this.newLoop, newvu2);
 
-            fill_fu(newfu2, vertexHasUseInRegion.s!, newfu1, newlu2, Orientation.OUTSIDE, this.newFace);
+            newfu2.fill_fu(vertexHasUseInRegion.s!, newfu1, newlu2, Orientation.OUTSIDE, this.newFace);
             if (!vertexHasUseInRegion.s!.faceuse) {
                 vertexHasUseInRegion.s!.faceuse = newfu2;
             } else {
                 vertexHasUseInRegion.s!.faceuse = vertexHasUseInRegion.s!.faceuse.link(newfu2);
             }
 
-            fill_vu_loopuse(newvu2, this.vertex, newlu2);
+            newvu2.fill_vu_loopuse(this.vertex, newlu2);
 
             link_vu(newvu1, this.vertex, DescType.LOOPUSE, null, this.newLoop);
             link_vu(newvu2, this.vertex, DescType.LOOPUSE, null, this.newLoop);

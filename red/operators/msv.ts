@@ -1,7 +1,6 @@
 import { DescType } from "../definitions";
 import Region from "../region";
 import Shell from "../shell";
-import { fill_vu_shell } from "../utils";
 import Vertex from "../vertex";
 import VertexUse from "../vertexuse";
 import KSV from "./ksv";
@@ -44,7 +43,7 @@ export default class MSV extends Operator {
         new_vertexuse.next = new_vertexuse;
         new_vertexuse.last = new_vertexuse;
 
-        fill_vu_shell(new_vertexuse, this.vertex, this.shell);
+        new_vertexuse.fill_vu_shell(this.vertex, this.shell);
     }
 
     public unexecute(){

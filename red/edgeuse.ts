@@ -33,4 +33,25 @@ export default class EdgeUse extends CircularDoublyLinkedListItem {
         EdgeUse.counter++;
         this.id = EdgeUse.counter;
     }
+
+    fill_eu_shell(vu: VertexUse, mate: EdgeUse, edge: Edge, shell: Shell, orient: Orientation) {
+        this.vertexUse = vu;
+        this.mate = mate;
+        this.edge = edge;
+        this.orientation = orient;
+        this.up = DescType.SHELL;
+        this.shell = shell;
+    }
+    
+    fill_eu_loopuse(vu: VertexUse, mate: EdgeUse, edge: Edge, lu: LoopUse, cw: EdgeUse | null, ccw: EdgeUse | null, radial: EdgeUse, orient: Orientation) {
+        this.vertexUse = vu;
+        this.mate = mate;
+        this.edge = edge;
+        this.orientation = orient;
+        this.up = DescType.LOOPUSE;
+        this.loopuse = lu;
+        this.clockwiseEdgeUse = cw;
+        this.counterClockwiseEdgeUse = ccw;
+        this.radial = radial;
+    }
 }

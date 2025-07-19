@@ -7,7 +7,7 @@ import FaceUse from "../faceuse";
 import LoopUse from "../loopuse";
 import Region from "../region";
 import Shell from "../shell";
-import { CircularDoublyLinkedListItem, fill_eu_shell, fill_vu_edgeuse, link_vu } from "../utils";
+import { CircularDoublyLinkedListItem, link_vu } from "../utils";
 import Vertex from "../vertex";
 import VertexUse from "../vertexuse";
 import Operator from "./operator";
@@ -18,16 +18,13 @@ export class MEV extends Operator {
     public new_edge: Edge;
     public new_vertex: Vertex;
 
-    constructor(vertex_begin: Vertex, region: Region /*, point: Point*/) {
+    constructor(vertex_begin: Vertex, region: Region, new_edge: Edge, new_vertex: Vertex) {
         super();    
 
         this.vertex_begin = vertex_begin;
         this.region = region;
-
-        this.new_edge = new Edge();
-        
-        // TODO: add Point on vertex constructor
-        this.new_vertex = new Vertex();
+        this.new_edge = new_edge;
+        this.new_vertex = new_vertex;
     }
 
     execute(): void {
@@ -70,14 +67,14 @@ export class MEV extends Operator {
         this.new_edge.edgeuse = neweu1;
         this.new_vertex.vertexuse = newvu1;
 
-        fill_vu_edgeuse(newvu2, this.vertex_begin, neweu1);
+        newvu2.fill_vu_edgeuse(this.vertex_begin, neweu1);
 
         newvu1.next = newvu1;
         newvu1.last = newvu1;
-        fill_vu_edgeuse(newvu1, this.new_vertex, neweu2);
+        newvu1.fill_vu_edgeuse(this.new_vertex, neweu2);
 
-        fill_eu_shell(neweu1, newvu2, neweu2, this.new_edge, s_v, Orientation.SAME);
-        fill_eu_shell(neweu2, newvu1, neweu1, this.new_edge, s_v, Orientation.OPPOSITE);
+        neweu1.fill_eu_shell(newvu2, neweu2, this.new_edge, s_v, Orientation.SAME);
+        neweu2.fill_eu_shell(newvu1, neweu1, this.new_edge, s_v, Orientation.OPPOSITE);
 
         if (!s_v.edgeuse) {
             s_v.edgeuse = CircularDoublyLinkedListItem.first(neweu1);

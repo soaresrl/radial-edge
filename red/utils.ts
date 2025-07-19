@@ -1,12 +1,9 @@
-import { DescType, Direction, Orientation } from "./definitions";
+import { DescType, Direction, QueryType } from "./definitions";
 import Edge from "./edge";
 import EdgeUse from "./edgeuse";
-import Face from "./face";
 import FaceUse from "./faceuse";
 import Loop from "./loop";
 import LoopUse from "./loopuse";
-import Region from "./region";
-import Shell from "./shell";
 import Vertex from "./vertex";
 import VertexUse from "./vertexuse";
 
@@ -19,8 +16,11 @@ abstract class CircularDoublyLinkedListItem {
         this.next = this;
     }
 
-    static first<T extends CircularDoublyLinkedListItem>(new_elem: T): T {
-        new_elem.next = new_elem;
+    // dll_first(neweu1,s_v1->dwn_seu_ptr,fwd.seu_next,bck.seu_last)
+	// dll_link(neweu2,s_v1->dwn_seu_ptr,fwd.seu_next,bck.seu_last)
+
+    static first<T extends CircularDoublyLinkedListItem>(new_elem: T, ): T {
+        new_elem.next = new_elem; // new_elem.fwd.seu_next = new_elem;
         new_elem.last = new_elem;
 
         return new_elem;
@@ -53,75 +53,24 @@ abstract class CircularDoublyLinkedListItem {
 
         return head;
     }
-}
 
-function fill_s_faceuse(shell: Shell, region: Region, shell_faceuse: FaceUse) {
-    shell.region = region;
-    shell.desc_type = DescType.FACEUSE;
-    shell.faceuse = shell_faceuse;
-}
-
-function fill_fu(fu: FaceUse, shell: Shell, mate: FaceUse, lu: LoopUse, orient: Orientation, face: Face){
-    fu.owningShell = shell;
-    fu.mate = mate;
-    fu.loopuse = lu;
-    fu.orientation = orient;
-    fu.face = face;
-}
-
-function fill_lu_vertexuse(lu: LoopUse, fu: FaceUse, mate: LoopUse, loop: Loop, vu: VertexUse) {
-    lu.faceuse = fu;
-    lu.mate = mate;
-    lu.loop = loop;
-    lu.down = DescType.VERTEXUSE;
-    lu.vertexuse = vu;
-}
-
-function fill_lu_edgeuse(lu: LoopUse, fu: FaceUse, mate: LoopUse, loop: Loop, eu: EdgeUse) {
-    lu.faceuse = fu;
-    lu.mate = mate;
-    lu.loop = loop;
-    lu.down = DescType.EDGEUSE;
-    lu.edgeuse = eu;
-}
-
-function fill_vu_loopuse(vu: VertexUse, v: Vertex, lu: LoopUse){
-    vu.vertex = v;
-    vu.up = DescType.LOOPUSE;
-    vu.loopuse = lu;
-}
-
-function fill_vu_edgeuse(vu: VertexUse, vertex: Vertex, eu: EdgeUse) {
-    vu.vertex = vertex;
-    vu.up = DescType.EDGEUSE;
-    vu.edgeuse = eu;
-}
-
-function fill_vu_shell(vu: VertexUse, vertex: Vertex, shell: Shell) {
-    vu.vertex = vertex;
-    vu.up = DescType.SHELL;
-    vu.shell = shell;
-}
-
-function fill_eu_shell(eu: EdgeUse, vu: VertexUse, mate: EdgeUse, edge: Edge, shell: Shell, orient: Orientation) {
-    eu.vertexUse = vu;
-    eu.mate = mate;
-    eu.edge = edge;
-    eu.orientation = orient;
-    eu.up = DescType.SHELL;
-    eu.shell = shell;
-}
-
-function fill_eu_loopuse(eu: EdgeUse, vu: VertexUse, mate: EdgeUse, edge: Edge, lu: LoopUse, cw: EdgeUse | null, ccw: EdgeUse | null, radial: EdgeUse, orient: Orientation) {
-    eu.vertexUse = vu;
-    eu.mate = mate;
-    eu.edge = edge;
-    eu.orientation = orient;
-    eu.up = DescType.LOOPUSE;
-    eu.loopuse = lu;
-    eu.clockwiseEdgeUse = cw;
-    eu.counterClockwiseEdgeUse = ccw;
-    eu.radial = radial;
+    public query(ptr: this, query: QueryType): this {
+        switch (query) {
+            case QueryType.FIRST:
+                return this;
+            case QueryType.LAST:
+                return this.last;
+            case QueryType.NEXT:
+                if (ptr == null) return this;
+                else return ptr.next;
+            case QueryType.PREVIOUS:
+                if (ptr == null) return this.last;
+                else return ptr.last;
+        
+            default:
+                break;
+        }
+    }
 }
 
 function for_all_eu_in_lu(head: EdgeUse, operation: (eu: EdgeUse) => void) {
@@ -134,6 +83,28 @@ function for_all_eu_in_lu(head: EdgeUse, operation: (eu: EdgeUse) => void) {
             eu = eu.clockwiseEdgeUse!;
         } while (eu != eu_first);
     }
+}
+
+function for_all_eu_in_s(head: EdgeUse, operation: (eu: EdgeUse) => void) {
+    let eu: EdgeUse, eu_first: EdgeUse;
+    if (head.up == DescType.SHELL) {
+        eu = head;
+        eu_first = head;
+        do {
+            operation(eu);
+            eu = eu.next;
+        } while (eu != eu_first);
+    }
+}
+
+function for_all_fu_in_s(head: FaceUse, operation: (fu: FaceUse) => void) {
+    let fu: FaceUse, fu_first: FaceUse;
+    fu = head;
+    fu_first = head;
+    do {
+        operation(fu);
+        fu = fu.next!;
+    } while (fu != fu_first);
 }
 
 function link_vu(new_vu: VertexUse, v_parent: Vertex, vu_type: DescType, e_parent: Edge | null, loop_parent: Loop | null){
@@ -310,16 +281,9 @@ function link_wing(v: Vertex, e: Edge, dir: Direction, lu: LoopUse, eu1: EdgeUse
 
 export {
     CircularDoublyLinkedListItem,
-    fill_s_faceuse,
-    fill_fu,
-    fill_lu_vertexuse,
-    fill_lu_edgeuse,
-    fill_vu_loopuse,
-    fill_vu_edgeuse,
-    fill_vu_shell,
-    fill_eu_shell,
-    fill_eu_loopuse,
     for_all_eu_in_lu,
+    for_all_eu_in_s,
+    for_all_fu_in_s,
     link_vu,
     link_wing
 }

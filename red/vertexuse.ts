@@ -27,4 +27,22 @@ export default class VertexUse extends CircularDoublyLinkedListItem {
         VertexUse.counter++;
         this.id = VertexUse.counter;
     }
+
+    fill_vu_loopuse(v: Vertex, lu: LoopUse){
+        this.vertex = v;
+        this.up = DescType.LOOPUSE;
+        this.loopuse = lu;
+    }
+
+    fill_vu_edgeuse(vertex: Vertex, eu: EdgeUse) {
+        this.vertex = vertex;
+        this.up = DescType.EDGEUSE;
+        this.edgeuse = eu;
+    }
+
+    fill_vu_shell(vertex: Vertex, shell: Shell) {
+        this.vertex = vertex;
+        this.up = DescType.SHELL;
+        this.shell = shell;
+    }
 }
